@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #fff8eb;
+  --color-brand-100: #feecc7;
+  --color-brand-200: #fdd68a;
+  --color-brand-300: #fcbb4d;
+  --color-brand-400: #fba124;
+  --color-brand-500: #f57f0b;
+  --color-brand-600: #d95c06;
+  --color-brand-700: #b43e09;
+  --color-brand-800: #92300e;
+  --color-brand-900: #78290f;
+  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-stone-100);
+  color: var(--color-stone-900);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Hilangkan panah angka di input number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+}
