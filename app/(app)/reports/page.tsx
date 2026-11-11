@@ -82,7 +82,7 @@ export default function ReportsPage() {
   const maxQty = Math.max(1, ...(top ?? []).map((i) => i.qty));
 
   return (
-    <div className="p-4">
+    <div className="p-3 md:p-4">
       <PageHeader title="Laporan">
         {presets.map((p) => (
           <Button
@@ -97,9 +97,11 @@ export default function ReportsPage() {
             {p.label}
           </Button>
         ))}
-        <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="w-40" />
-        <span>–</span>
-        <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="w-40" />
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="min-w-0 flex-1 sm:w-40 sm:flex-none" />
+          <span>–</span>
+          <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="min-w-0 flex-1 sm:w-40 sm:flex-none" />
+        </div>
       </PageHeader>
       <p className="-mt-2 mb-4 text-sm text-stone-500">
         Tanggal = hari bisnis (transaksi setelah tengah malam masuk ke hari sebelumnya).
@@ -126,14 +128,14 @@ export default function ReportsPage() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={cn("h-11 rounded-xl px-4 text-sm font-semibold", tab === k ? "bg-stone-900 text-white" : "bg-white text-stone-700")}
+            className={cn("h-11 shrink-0 rounded-xl px-3 text-sm font-semibold sm:px-4", tab === k ? "bg-stone-900 text-white" : "bg-white text-stone-700")}
           >
             {l}
           </button>
         ))}
         <div className="ml-auto flex items-center gap-2">
           {tab === "trx" && (
-            <Select value={method} onChange={(e) => setMethod(e.target.value)} className="w-36">
+            <Select value={method} onChange={(e) => setMethod(e.target.value)} className="w-40">
               <option value="">Semua metode</option>
               <option value="cash">Tunai</option>
               <option value="qris">QRIS</option>
@@ -155,7 +157,7 @@ export default function ReportsPage() {
             <EmptyState title="Belum ada transaksi di rentang ini" />
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full whitespace-nowrap text-sm">
                 <thead className="border-b border-stone-200 text-xs uppercase text-stone-500">
                   <tr>
                     <th className="px-3 py-2 text-left">Hari bisnis</th>
@@ -188,7 +190,7 @@ export default function ReportsPage() {
           ) : top.length === 0 ? (
             <EmptyState title="Belum ada penjualan di rentang ini" />
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full whitespace-nowrap text-sm">
               <thead className="border-b border-stone-200 text-xs uppercase text-stone-500">
                 <tr>
                   <th className="w-10 px-3 py-2 text-left">#</th>
@@ -201,7 +203,7 @@ export default function ReportsPage() {
                 {top.map((i, idx) => (
                   <tr key={i.name} className="h-12">
                     <td className="px-3 text-stone-400">{idx + 1}</td>
-                    <td className="px-3">
+                    <td className="whitespace-normal px-3">
                       <div className="font-medium">{i.name}</div>
                       <div className="mt-1 h-1.5 rounded-full bg-brand-500" style={{ width: `${(i.qty / maxQty) * 100}%` }} />
                     </td>
@@ -231,9 +233,9 @@ function Loading() {
 
 function Stat({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
-    <Card className={cn("p-4", strong && "border-brand-300 bg-brand-50")}>
-      <div className="text-sm text-stone-500">{label}</div>
-      <div className={cn("font-bold", strong ? "text-2xl text-brand-800" : "text-xl")}>{value}</div>
+    <Card className={cn("p-3 sm:p-4", strong && "border-brand-300 bg-brand-50")}>
+      <div className="text-xs text-stone-500 sm:text-sm">{label}</div>
+      <div className={cn("font-bold", strong ? "text-xl text-brand-800 sm:text-2xl" : "text-lg sm:text-xl")}>{value}</div>
     </Card>
   );
 }

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Minus, Pencil, Plus, Search, ShoppingBasket, Trash2, X } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Minus, Pencil, Plus, Search, ShoppingBasket, Trash2, X } from "lucide-react";
 import { api, errMsg } from "@/lib/client";
 import { fmtTime, rupiah } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -81,9 +81,13 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
   const [paid, setPaid] = useState<OrderDetail | null>(null);
   const [voidOpen, setVoidOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  // Di HP keranjang tampil sebagai layar penuh yang dibuka dari bar bawah
+  const [cartOpen, setCartOpen] = useState(false);
+  const [bump, setBump] = useState(0);
   const tableRef = useRef<HTMLInputElement>(null);
 
   const applyOrder = useCallback((o: OrderDetail) => {
+    if (o.status !== "open") setCartOpen(true);
     setOrder(o);
     setTableLabel(o.tableLabel ?? "");
     setCustomerName(o.customerName ?? "");
@@ -99,7 +103,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
       api<{ order: OrderDetail }>(`/api/orders/${orderId}`)
         .then((r) => applyOrder(r.order))
         .catch((e) => setLoadError(errMsg(e)));
-    } else {
+    } else if (window.matchMedia("(min-width: 768px)").matches) {
       setTimeout(() => tableRef.current?.focus(), 100);
     }
   }, [orderId, applyOrder]);
@@ -139,6 +143,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
       return [...c, { ...item, uid: uid() }];
     });
     setDirty(true);
+    setBump((b) => b + 1);
   }
 
   function tapProduct(p: MenuProduct) {
@@ -196,7 +201,8 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
   async function save(): Promise<OrderDetail | null> {
     if (!tableLabel.trim() && !customerName.trim()) {
       toast("Isi nomor meja atau nama pelanggan dulu", "error");
-      tableRef.current?.focus();
+      setCartOpen(true);
+      setTimeout(() => tableRef.current?.focus(), 50);
       return null;
     }
     if (cart.length === 0 && !id) {
@@ -274,7 +280,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
     <div className="flex h-full min-h-0">
       {/* Kolom kiri: menu */}
       <section className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2 border-b border-stone-200 bg-white p-3">
+        <div className="flex items-center gap-2 border-b border-stone-200 bg-white p-2 md:p-3">
           <Button variant="ghost" size="icon" onClick={back} aria-label="Kembali">
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -288,7 +294,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             )}
           </div>
         </div>
-        <div className="scroll-thin flex gap-2 overflow-x-auto border-b border-stone-200 bg-white px-3 py-2">
+        <div className="scroll-thin flex gap-2 overflow-x-auto border-b border-stone-200 bg-white px-2 py-2 md:px-3">
           <CatTab active={cat === "all" && !search} onClick={() => { setCat("all"); setSearch(""); }}>
             Semua
           </CatTab>
@@ -298,35 +304,80 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             </CatTab>
           ))}
         </div>
-        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-3">
+        <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-2 md:p-3">
           {products.length === 0 ? (
             <p className="py-10 text-center text-stone-500">Menu tidak ditemukan</p>
           ) : (
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
-              {products.map((p) => (
-                <button
-                  key={p.id}
-                  disabled={readOnly}
-                  onClick={() => tapProduct(p)}
-                  className="flex min-h-24 flex-col justify-between rounded-2xl border border-stone-200 bg-white p-3 text-left shadow-sm transition hover:border-brand-400 active:scale-[0.98] active:bg-brand-50 disabled:opacity-50"
-                >
-                  <span className="font-semibold leading-snug">{p.name}</span>
-                  <span className="mt-2 flex items-center justify-between text-sm">
-                    <span className="font-bold text-brand-700">{priceLabel(p)}</span>
-                    {(p.optionGroups.length > 0 || p.variants.length > 1) && <span className="text-xs text-stone-400">pilihan ›</span>}
-                  </span>
-                </button>
-              ))}
+              {products.map((p) => {
+                const inCart = cart.filter((i) => i.productId === p.id).reduce((a, i) => a + i.qty, 0);
+                return (
+                  <button
+                    key={p.id}
+                    disabled={readOnly}
+                    onClick={() => tapProduct(p)}
+                    className={cn(
+                      "relative flex min-h-[5.5rem] flex-col justify-between rounded-2xl border bg-white p-3 text-left shadow-sm transition hover:border-brand-400 active:scale-[0.98] active:bg-brand-50 disabled:opacity-50 md:min-h-24",
+                      inCart > 0 ? "border-brand-400 ring-1 ring-brand-400" : "border-stone-200",
+                    )}
+                  >
+                    {inCart > 0 && (
+                      <span className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white shadow">
+                        {inCart}
+                      </span>
+                    )}
+                    <span className="text-[15px] font-semibold leading-snug md:text-base">{p.name}</span>
+                    <span className="mt-2 flex flex-wrap items-center justify-between gap-x-2 text-sm">
+                      <span className="font-bold text-brand-700">{priceLabel(p)}</span>
+                      {(p.optionGroups.length > 0 || p.variants.length > 1) && <span className="text-xs text-stone-400">pilihan ›</span>}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
+
+        {/* Bar keranjang untuk HP */}
+        <div className="border-t border-stone-200 bg-white p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden">
+          <button
+            onClick={() => setCartOpen(true)}
+            className="flex h-14 w-full items-center gap-3 rounded-2xl bg-brand-600 px-4 text-white shadow-lg active:bg-brand-700"
+          >
+            <span key={bump} className="relative animate-[pop_.25s_ease-out]">
+              <ShoppingBasket className="h-6 w-6" />
+              {itemCount > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-brand-700">
+                  {itemCount}
+                </span>
+              )}
+            </span>
+            <span className="flex-1 text-left">
+              <span className="block text-sm font-semibold leading-tight">
+                {itemCount > 0 ? `${itemCount} item` : "Keranjang kosong"}
+                {dirty && <span className="font-normal text-brand-100"> · belum disimpan</span>}
+              </span>
+              <span className="block text-xs text-brand-100">{tableLabel ? `Meja ${tableLabel}` : customerName || "Meja / nama belum diisi"}</span>
+            </span>
+            <span className="text-lg font-extrabold">Rp {rupiah(total)}</span>
+            <ChevronUp className="h-5 w-5" />
+          </button>
+        </div>
       </section>
 
-      {/* Kolom kanan: keranjang */}
-      <aside className="flex w-[360px] shrink-0 flex-col border-l border-stone-200 bg-white xl:w-[420px]">
+      {/* Kolom kanan: keranjang (di HP: layar penuh) */}
+      <aside
+        className={cn(
+          "flex-col bg-white md:static md:z-auto md:flex md:w-[340px] md:shrink-0 md:border-l md:border-stone-200 lg:w-[380px] xl:w-[420px]",
+          cartOpen ? "fixed inset-0 z-40 flex" : "hidden",
+        )}
+      >
         <div className="border-b border-stone-200 p-3">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="font-bold">{order ? order.code : "Pesanan Baru"}</span>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <button onClick={() => setCartOpen(false)} className="-ml-1 flex h-10 w-10 items-center justify-center rounded-xl text-stone-600 hover:bg-stone-100 md:hidden" aria-label="Kembali ke menu">
+              <ChevronDown className="h-6 w-6" />
+            </button>
+            <span className="mr-auto font-bold">{order ? order.code : "Pesanan Baru"}</span>
             {order && (
               <span className="flex items-center gap-2 text-xs text-stone-500">
                 {fmtTime(order.createdAt)}
@@ -373,7 +424,12 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
           ) : cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-stone-400">
               <ShoppingBasket className="h-12 w-12" />
-              <p>Ketuk menu di kiri untuk menambah item</p>
+              <p>
+                Ketuk menu <span className="hidden md:inline">di kiri </span>untuk menambah item
+              </p>
+              <Button variant="outline" className="mt-2 md:hidden" onClick={() => setCartOpen(false)}>
+                Pilih Menu
+              </Button>
             </div>
           ) : (
             <ul className="divide-y divide-stone-100">
@@ -412,12 +468,12 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
           )}
         </div>
 
-        <div className="border-t border-stone-200 p-3">
-          <div className="mb-3 flex items-end justify-between">
-            <span className="text-stone-500">
-              Total · {itemCount} item {dirty && <span className="font-semibold text-amber-600">(belum disimpan)</span>}
+        <div className="border-t border-stone-200 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <div className="mb-3 flex items-end justify-between gap-2">
+            <span className="text-sm text-stone-500 md:text-base">
+              Total · {itemCount} item {dirty && <span className="block font-semibold text-amber-600 xl:inline">(belum disimpan)</span>}
             </span>
-            <span className="text-3xl font-extrabold">Rp {rupiah(readOnly && order ? order.total : total)}</span>
+            <span className="text-2xl font-extrabold md:text-3xl">Rp {rupiah(readOnly && order ? order.total : total)}</span>
           </div>
           {readOnly ? (
             <Link href="/">

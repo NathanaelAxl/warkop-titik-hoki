@@ -67,7 +67,7 @@ export default function AdminMenuPage() {
     );
 
   return (
-    <div className="p-4">
+    <div className="p-3 md:p-4">
       <PageHeader title="Kelola Menu">
         <div className="flex rounded-xl bg-white p-1">
           {(
@@ -98,7 +98,7 @@ export default function AdminMenuPage() {
                   key={c.id}
                   className={cn("flex items-center gap-1 rounded-xl p-1 pl-3", c.id === catId ? "bg-brand-100" : "hover:bg-stone-100")}
                 >
-                  <button className="min-h-11 flex-1 text-left" onClick={() => setCatId(c.id)}>
+                  <button className="min-h-11 flex-1 text-left" onClick={() => { setCatId(c.id); if (window.innerWidth < 1024) document.getElementById("menu-list")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}>
                     <span className={cn("font-semibold", !c.isActive && "text-stone-400 line-through")}>{c.name}</span>
                     <span className="ml-2 text-xs text-stone-500">{c.products.length}</span>
                   </button>
@@ -116,7 +116,7 @@ export default function AdminMenuPage() {
             </ul>
           </Card>
 
-          <Card className="p-3">
+          <Card id="menu-list" className="scroll-mt-3 p-3">
             <div className="mb-2 flex items-center justify-between">
               <h2 className="font-bold">{cat ? `Menu: ${cat.name}` : "Menu"}</h2>
               <Button size="sm" disabled={!cat} onClick={() => setEditProd("new")}>
@@ -128,8 +128,8 @@ export default function AdminMenuPage() {
             ) : (
               <ul className="divide-y divide-stone-100">
                 {cat.products.map((p, i) => (
-                  <li key={p.id} className="flex items-center gap-2 py-2">
-                    <div className="min-w-0 flex-1">
+                  <li key={p.id} className="flex flex-wrap items-center gap-x-1 gap-y-1 py-2 sm:flex-nowrap sm:gap-2">
+                    <div className="min-w-0 basis-full sm:basis-auto sm:flex-1">
                       <div className={cn("font-semibold", !p.isActive && "text-stone-400")}>
                         {p.name} {!p.isActive && <Badge color="red">Nonaktif</Badge>}
                       </div>
@@ -500,14 +500,14 @@ function GroupDialog({ group, onClose, onSaved }: { group: AdminGroup | null; on
       </div>
       <h3 className="mb-1 mt-4 font-bold">Isi pilihan</h3>
       <p className="mb-2 text-xs text-stone-500">Harga 0 = tanpa tambahan. Harga Jumbo hanya diisi untuk topping yang harganya ikut ukuran (topping ropang).</p>
-      <div className="mb-1 grid grid-cols-[1fr_110px_110px_44px] gap-2 text-xs font-semibold text-stone-500">
+      <div className="mb-1 grid grid-cols-[1fr_68px_68px_44px] gap-1.5 sm:grid-cols-[1fr_110px_110px_44px] sm:gap-2 text-xs font-semibold text-stone-500">
         <span>Nama</span>
         <span>Harga</span>
-        <span>Harga Jumbo</span>
+        <span><span className="sm:hidden">Jumbo</span><span className="hidden sm:inline">Harga Jumbo</span></span>
         <span />
       </div>
       {opts.map((o, i) => (
-        <div key={i} className="mb-2 grid grid-cols-[1fr_110px_110px_44px] gap-2">
+        <div key={i} className="mb-2 grid grid-cols-[1fr_68px_68px_44px] gap-1.5 sm:grid-cols-[1fr_110px_110px_44px] sm:gap-2">
           <Input value={o.name} onChange={(e) => upd(i, "name", e.target.value)} />
           <Input value={o.price} inputMode="numeric" onChange={(e) => upd(i, "price", e.target.value.replace(/\D/g, ""))} />
           <Input value={o.priceJumbo} inputMode="numeric" placeholder="-" onChange={(e) => upd(i, "priceJumbo", e.target.value.replace(/\D/g, ""))} />

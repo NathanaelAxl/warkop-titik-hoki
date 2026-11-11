@@ -42,14 +42,14 @@ export default function TransactionsPage() {
   const sum = (m?: string) => paid.filter((o) => !m || o.method === m).reduce((a, o) => a + o.total, 0);
 
   return (
-    <div className="p-4">
+    <div className="p-3 md:p-4">
       <PageHeader title="Riwayat Transaksi">
         {isOwner ? (
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="w-44" />
         ) : (
           <span className="text-sm text-stone-500">Hari ini · {businessDate && fmtBusinessDate(businessDate)}</span>
         )}
-        <Select value={method} onChange={(e) => setMethod(e.target.value)} className="w-36">
+        <Select value={method} onChange={(e) => setMethod(e.target.value)} className="w-40">
           <option value="">Semua metode</option>
           <option value="cash">Tunai</option>
           <option value="qris">QRIS</option>

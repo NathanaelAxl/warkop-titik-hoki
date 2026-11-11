@@ -70,7 +70,7 @@ export default function SettingsPage() {
     );
 
   return (
-    <div className="mx-auto max-w-5xl p-4">
+    <div className="mx-auto max-w-5xl p-3 md:p-4">
       <PageHeader title="Pengaturan Toko" />
       <div className="grid gap-4 md:grid-cols-[1fr_auto]">
         <Card className="p-5">

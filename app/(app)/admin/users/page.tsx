@@ -40,7 +40,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-4">
+    <div className="mx-auto max-w-3xl p-3 md:p-4">
       <PageHeader title="Kelola Pegawai">
         <Button onClick={() => setEdit("new")}>
           <Plus className="h-5 w-5" /> Tambah Akun

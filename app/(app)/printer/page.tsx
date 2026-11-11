@@ -47,7 +47,7 @@ export default function PrinterPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-4">
+    <div className="mx-auto max-w-4xl p-3 md:p-4">
       <PageHeader title="Pengaturan Printer" />
       {!supported && (
         <p className="mb-4 rounded-xl bg-amber-50 p-4 text-amber-900">

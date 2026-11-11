@@ -85,7 +85,7 @@ export function OptionsDialog({
               <Plus className="h-5 w-5" />
             </Button>
           </div>
-          <Button size="lg" onClick={submit}>
+          <Button size="lg" onClick={submit} className="flex-1 px-3 sm:flex-none sm:px-6">
             Tambah · Rp {rupiah(unit * qty)}
           </Button>
         </div>

@@ -42,7 +42,7 @@ export default function OpenOrdersPage() {
   const total = orders?.reduce((a, o) => a + o.total, 0) ?? 0;
 
   return (
-    <div className="p-4">
+    <div className="p-3 md:p-4">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Pesanan Terbuka</h1>
@@ -73,7 +73,7 @@ export default function OpenOrdersPage() {
           <p>Tekan “Pesanan Baru” saat ada pelanggan memesan.</p>
         </EmptyState>
       ) : (
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {orders.map((o) => (
             <Link key={o.id} href={`/order/${o.id}`}>
               <Card className="flex h-full flex-col gap-2 p-4 transition hover:border-brand-400 hover:shadow-md active:scale-[0.99]">
