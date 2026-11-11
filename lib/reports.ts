@@ -24,7 +24,7 @@ export type DailyRow = {
 };
 
 export async function dailyReport(from: string, to: string): Promise<DailyRow[]> {
-  const rows = await db.execute<Record<string, string | number>>(sql`
+  const { rows } = await db.execute<Record<string, string | number>>(sql`
     select o.business_date::text as date,
       coalesce(sum(o.total) filter (where o.status = 'paid'), 0)::bigint as omzet,
       (count(*) filter (where o.status = 'paid'))::int as trx_count,
@@ -38,7 +38,7 @@ export async function dailyReport(from: string, to: string): Promise<DailyRow[]>
     group by o.business_date
     order by o.business_date desc
   `);
-  return [...rows].map((r) => ({
+  return rows.map((r) => ({
     date: String(r.date),
     omzet: Number(r.omzet),
     trxCount: Number(r.trx_count),
@@ -51,7 +51,7 @@ export async function dailyReport(from: string, to: string): Promise<DailyRow[]>
 export type TopItem = { name: string; qty: number; revenue: number };
 
 export async function topItems(from: string, to: string, limit = 50): Promise<TopItem[]> {
-  const rows = await db.execute<Record<string, string | number>>(sql`
+  const { rows } = await db.execute<Record<string, string | number>>(sql`
     select case when oi.variant_name = 'Standar' then oi.product_name
                 else oi.product_name || ' ' || oi.variant_name end as name,
       sum(oi.qty)::int as qty,
@@ -63,7 +63,7 @@ export async function topItems(from: string, to: string, limit = 50): Promise<To
     order by qty desc, revenue desc
     limit ${limit}
   `);
-  return [...rows].map((r) => ({ name: String(r.name), qty: Number(r.qty), revenue: Number(r.revenue) }));
+  return rows.map((r) => ({ name: String(r.name), qty: Number(r.qty), revenue: Number(r.revenue) }));
 }
 
 export function toCsv(header: string[], rows: (string | number | null)[][]) {

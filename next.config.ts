@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // bcryptjs & postgres dijalankan di server (Node.js runtime)
-  serverExternalPackages: ["postgres"],
+  // driver database dijalankan di server (Node.js runtime)
+  serverExternalPackages: ["pg"],
 };
 
 export default nextConfig;
