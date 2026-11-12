@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, FileSpreadsheet } from "lucide-react";
 import { api, errMsg } from "@/lib/client";
 import { fmtBusinessDate, rupiah } from "@/lib/format";
 import type { OrderSummary } from "@/lib/types";
@@ -75,8 +75,10 @@ export default function ReportsPage() {
       ]
     : [];
 
-  const exportUrl = (type: string) =>
-    `/api/reports/export.csv?type=${type}&from=${from}&to=${to}${type === "transactions" && method ? `&method=${method}` : ""}`;
+  const exportUrl = (ext: "csv" | "xlsx") => {
+    const type = tab === "rekap" ? "daily" : tab === "top" ? "top" : "transactions";
+    return `/api/reports/export.${ext}?type=${type}&from=${from}&to=${to}${type === "transactions" && method ? `&method=${method}` : ""}`;
+  };
 
   const t = daily?.total;
   const maxQty = Math.max(1, ...(top ?? []).map((i) => i.qty));
@@ -141,9 +143,14 @@ export default function ReportsPage() {
               <option value="qris">QRIS</option>
             </Select>
           )}
-          <a href={exportUrl(tab === "rekap" ? "daily" : tab === "top" ? "top" : "transactions")}>
+          <a href={exportUrl("xlsx")} title="Unduh tabel Excel (.xlsx)">
             <Button variant="outline">
-              <Download className="h-5 w-5" /> Ekspor CSV
+              <FileSpreadsheet className="h-5 w-5 text-emerald-700" /> Excel
+            </Button>
+          </a>
+          <a href={exportUrl("csv")} title="Unduh file CSV">
+            <Button variant="outline">
+              <Download className="h-5 w-5" /> CSV
             </Button>
           </a>
         </div>

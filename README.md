@@ -78,7 +78,7 @@ npm run dev          # buka http://localhost:3000
 | Hubungkan printer, tes cetak, ingat printer terakhir | `/printer` | Semua |
 | Kelola kategori, menu, varian & harga, grup pilihan, urutan, nonaktifkan menu habis | `/admin/menu` | Owner |
 | Tambah / nonaktifkan pegawai, reset PIN | `/admin/users` | Owner |
-| Rekap harian, menu terlaris, daftar transaksi + filter, ekspor CSV | `/reports` | Owner |
+| Rekap harian, menu terlaris, daftar transaksi + filter, ekspor Excel (.xlsx) & CSV | `/reports` | Owner |
 | Nama toko, alamat, jam buka, catatan kaki struk, jam pergantian hari | `/admin/settings` | Owner |
 
 ### Aturan bisnis penting
