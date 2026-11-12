@@ -1,10 +1,11 @@
 import * as React from "react";
+import { Inbox } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-2xl border border-cream-200 bg-white shadow-[0_1px_2px_rgb(74_46_31/0.06),0_4px_14px_-6px_rgb(74_46_31/0.12)]", className)}
+      className={cn("rounded-xl border border-cream-200 bg-white shadow-[0_1px_2px_rgb(74_46_31/0.05)]", className)}
       {...props}
     />
   );
@@ -35,13 +36,21 @@ export function Spinner({ className }: { className?: string }) {
   return <span className={cn("inline-block h-6 w-6 animate-spin rounded-full border-[3px] border-brand-500 border-t-transparent", className)} />;
 }
 
-export function EmptyState({ title, emoji = "☕", children }: { title: string; emoji?: string; children?: React.ReactNode }) {
+export function EmptyState({
+  title,
+  icon: Icon = Inbox,
+  children,
+}: {
+  title: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  children?: React.ReactNode;
+}) {
   return (
     <div className="flex flex-col items-center justify-center gap-2 py-14 text-center text-stone-500">
-      <div className="mb-1 flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl shadow-[0_6px_20px_-8px_rgb(74_46_31/0.35)] ring-1 ring-cream-200">
-        {emoji}
+      <div className="mb-1 flex h-14 w-14 items-center justify-center rounded-full bg-cream-100 text-stone-400">
+        <Icon className="h-6 w-6" />
       </div>
-      <p className="text-lg font-bold text-espresso-800">{title}</p>
+      <p className="text-base font-semibold text-espresso-800">{title}</p>
       {children}
     </div>
   );
@@ -51,7 +60,7 @@ export function PageHeader({ title, subtitle, children }: { title: string; subti
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-espresso-900">{title}</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-espresso-900">{title}</h1>
         {subtitle && <p className="text-sm text-stone-500">{subtitle}</p>}
       </div>
       <div className="flex flex-wrap items-center gap-2">{children}</div>

@@ -7,7 +7,6 @@ import { api, errMsg } from "@/lib/client";
 import { fmtTime, rupiah } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { MenuCategory, MenuProduct, OrderDetail, OrderItemOption } from "@/lib/types";
-import { categoryStyle, productEmoji } from "@/lib/menu-style";
 import { Button } from "./ui/button";
 import { Input, Textarea } from "./ui/input";
 import { Dialog } from "./ui/dialog";
@@ -303,17 +302,14 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
           </div>
         </div>
         <div className="scroll-thin flex gap-2 overflow-x-auto border-b border-cream-200 bg-white/85 px-2 py-2 backdrop-blur md:px-3">
-          <CatTab active={cat === "all" && !search} emoji="✨" onClick={() => { setCat("all"); setSearch(""); }}>
+          <CatTab active={cat === "all" && !search} onClick={() => { setCat("all"); setSearch(""); }}>
             Semua
           </CatTab>
-          {menu.map((c) => {
-            const s = categoryStyle(c.name);
-            return (
-              <CatTab key={c.id} active={cat === c.id && !search} emoji={s.emoji} activeClass={s.tone.chip} onClick={() => { setCat(c.id); setSearch(""); }}>
-                {c.name}
-              </CatTab>
-            );
-          })}
+          {menu.map((c) => (
+            <CatTab key={c.id} active={cat === c.id && !search} onClick={() => { setCat(c.id); setSearch(""); }}>
+              {c.name}
+            </CatTab>
+          ))}
         </div>
         <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-2 md:p-3">
           {products.length === 0 ? (
@@ -322,8 +318,6 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
               {products.map((p) => {
                 const inCart = cart.filter((i) => i.productId === p.id).reduce((a, i) => a + i.qty, 0);
-                const cn_ = catName.get(p.id) ?? "";
-                const { tone } = categoryStyle(cn_);
                 const hasOpts = p.optionGroups.length > 0 || p.variants.length > 1;
                 return (
                   <button
@@ -331,23 +325,20 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
                     disabled={readOnly}
                     onClick={() => tapProduct(p)}
                     className={cn(
-                      "relative flex min-h-[7.25rem] flex-col rounded-2xl border bg-gradient-to-br to-white p-3 text-left shadow-[0_1px_2px_rgb(74_46_31/0.06),0_4px_12px_-6px_rgb(74_46_31/0.15)] transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97] disabled:opacity-50",
-                      tone.card,
-                      inCart > 0 ? "border-brand-400 ring-2 ring-brand-400/60" : "border-cream-200",
+                      "relative flex min-h-24 flex-col rounded-xl border bg-white p-3 text-left transition hover:border-stone-300 hover:shadow-sm active:bg-cream-50 disabled:opacity-50",
+                      inCart > 0 ? "border-brand-500 ring-1 ring-brand-500" : "border-cream-200",
                     )}
                   >
                     {inCart > 0 && (
-                      <span className="bg-brand-gradient absolute -right-1.5 -top-1.5 flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 text-xs font-extrabold text-white shadow-md ring-2 ring-white">
+                      <span className="absolute right-2 top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white">
                         {inCart}
                       </span>
                     )}
-                    <span className={cn("mb-2 flex h-10 w-10 items-center justify-center rounded-xl text-2xl ring-1", tone.bubble)} aria-hidden>
-                      {productEmoji(p.name, cn_)}
-                    </span>
-                    <span className="text-[15px] font-bold leading-snug text-espresso-900 md:text-base">{p.name}</span>
-                    <span className="mt-auto flex flex-wrap items-center justify-between gap-x-2 pt-1.5 text-sm">
-                      <span className={cn("font-extrabold", tone.price)}>{priceLabel(p)}</span>
-                      {hasOpts && <span className="rounded-full bg-white/80 px-1.5 text-[11px] font-semibold text-stone-500 ring-1 ring-cream-200">pilihan</span>}
+                    <span className="text-[11px] font-medium uppercase tracking-wide text-stone-400">{catName.get(p.id)}</span>
+                    <span className={cn("mt-0.5 text-[15px] font-semibold leading-snug text-espresso-900", inCart > 0 && "pr-7")}>{p.name}</span>
+                    <span className="mt-auto flex flex-wrap items-center justify-between gap-x-2 pt-2 text-sm">
+                      <span className="font-bold text-espresso-800">{priceLabel(p)}</span>
+                      {hasOpts && <span className="text-xs font-medium text-stone-400">+ pilihan</span>}
                     </span>
                   </button>
                 );
@@ -441,7 +432,9 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             </div>
           ) : cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-stone-400">
-              <span className="mb-1 flex h-20 w-20 items-center justify-center rounded-full bg-cream-100 text-4xl ring-1 ring-cream-200">🧺</span>
+              <span className="mb-1 flex h-16 w-16 items-center justify-center rounded-full bg-cream-100 text-stone-400">
+                <ShoppingBasket className="h-7 w-7" />
+              </span>
               <p>
                 Ketuk menu <span className="hidden md:inline">di kiri </span>untuk menambah item
               </p>
@@ -454,9 +447,6 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
               {cart.map((i) => (
                 <li key={i.uid} className="animate-fade-up px-3 py-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cream-100 text-xl ring-1 ring-cream-200" aria-hidden>
-                      {productEmoji(i.productName, i.productId ? catName.get(i.productId) : undefined)}
-                    </span>
                     <div className="min-w-0 flex-1">
                       <div className="font-semibold leading-snug">{displayName(i)}</div>
                       {i.options.length > 0 && (
@@ -574,28 +564,15 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
   );
 }
 
-function CatTab({
-  active,
-  onClick,
-  emoji,
-  activeClass = "bg-espresso-800",
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  emoji: string;
-  activeClass?: string;
-  children: React.ReactNode;
-}) {
+function CatTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "flex h-11 shrink-0 items-center gap-1.5 rounded-full pl-2 pr-4 text-sm font-semibold transition active:scale-95",
-        active ? cn(activeClass, "text-white shadow-md") : "bg-cream-100 text-espresso-800 ring-1 ring-cream-200 hover:bg-cream-200",
+        "h-10 shrink-0 rounded-lg px-4 text-sm font-semibold transition",
+        active ? "bg-espresso-800 text-white" : "bg-white text-stone-600 ring-1 ring-inset ring-cream-200 hover:bg-cream-50 hover:text-espresso-900",
       )}
     >
-      <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-base", active ? "bg-white/25" : "bg-white")}>{emoji}</span>
       {children}
     </button>
   );

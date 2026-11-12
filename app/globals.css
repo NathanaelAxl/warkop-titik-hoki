@@ -30,23 +30,18 @@ body {
 }
 
 body {
-  /* Krem hangat dengan pola titik halus */
   background-color: var(--color-cream-100);
-  background-image: radial-gradient(rgb(120 80 40 / 0.07) 1px, transparent 1px);
-  background-size: 18px 18px;
   color: var(--color-stone-900);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
 
-/* Kilau hangat untuk tombol & kartu utama */
+/* Warna solid (tanpa gradasi) supaya tampilan tetap bersih */
 .bg-brand-gradient {
-  background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700));
+  background-color: var(--color-brand-600);
 }
 .bg-espresso-gradient {
-  background-image:
-    radial-gradient(circle at 85% -20%, rgb(245 127 11 / 0.35), transparent 55%),
-    linear-gradient(135deg, var(--color-espresso-800), var(--color-espresso-950));
+  background-color: var(--color-espresso-900);
 }
 
 @keyframes fade-up {
