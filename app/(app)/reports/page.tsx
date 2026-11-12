@@ -130,7 +130,7 @@ export default function ReportsPage() {
           <button
             key={k}
             onClick={() => setTab(k)}
-            className={cn("h-11 shrink-0 rounded-xl px-3 text-sm font-semibold sm:px-4", tab === k ? "bg-stone-900 text-white" : "bg-white text-stone-700")}
+            className={cn("h-11 shrink-0 rounded-xl px-3 text-sm font-semibold sm:px-4", tab === k ? "bg-espresso-800 text-white shadow-md" : "bg-white text-espresso-800 ring-1 ring-cream-200")}
           >
             {l}
           </button>

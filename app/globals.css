@@ -11,7 +11,17 @@
   --color-brand-700: #b43e09;
   --color-brand-800: #92300e;
   --color-brand-900: #78290f;
-  --font-sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Nuansa warkop: krem hangat & espresso */
+  --color-cream-50: #fdfaf5;
+  --color-cream-100: #f8f1e6;
+  --color-cream-200: #efe3d0;
+  --color-cream-300: #e2d0b4;
+  --color-espresso-700: #4a2e1f;
+  --color-espresso-800: #3a2318;
+  --color-espresso-900: #2b1a12;
+  --color-espresso-950: #1d110b;
 }
 
 html,
@@ -20,10 +30,31 @@ body {
 }
 
 body {
-  background: var(--color-stone-100);
+  /* Krem hangat dengan pola titik halus */
+  background-color: var(--color-cream-100);
+  background-image: radial-gradient(rgb(120 80 40 / 0.07) 1px, transparent 1px);
+  background-size: 18px 18px;
   color: var(--color-stone-900);
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
+}
+
+/* Kilau hangat untuk tombol & kartu utama */
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-700));
+}
+.bg-espresso-gradient {
+  background-image:
+    radial-gradient(circle at 85% -20%, rgb(245 127 11 / 0.35), transparent 55%),
+    linear-gradient(135deg, var(--color-espresso-800), var(--color-espresso-950));
+}
+
+@keyframes fade-up {
+  from { transform: translateY(8px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-fade-up {
+  animation: fade-up 0.35s ease-out both;
 }
 
 /* Hilangkan panah angka di input number */

@@ -80,10 +80,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-dvh flex-col">
-      <header className="flex h-14 shrink-0 items-center gap-2 bg-stone-900 px-3 text-white md:h-16">
+      <header className="bg-espresso-gradient flex h-14 shrink-0 items-center gap-2 px-3 text-white shadow-lg shadow-espresso-900/20 md:h-16">
         <Link href="/" className="mr-auto flex items-center gap-2 md:mr-2">
           <img src="/icon.svg" alt="" className="h-8 w-8 md:h-9 md:w-9" />
-          <span className="font-extrabold leading-tight md:hidden xl:block">Titik Hoki</span>
+          <span className="leading-tight md:hidden xl:block"><span className="block text-[15px] font-extrabold tracking-tight">Titik Hoki</span><span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-brand-300">Kasir Warkop</span></span>
         </Link>
         <nav className="scroll-thin hidden flex-1 items-center gap-1 overflow-x-auto md:flex">
           {nav.map((n) => (
@@ -92,7 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={n.href}
               className={cn(
                 "flex h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-semibold transition",
-                isActive(n.href) ? "bg-brand-600 text-white" : "text-stone-300 hover:bg-stone-800",
+                isActive(n.href) ? "bg-brand-gradient text-white shadow-md shadow-brand-900/40" : "text-cream-200/80 hover:bg-white/10 hover:text-white",
               )}
             >
               <n.icon className="h-5 w-5" />
@@ -104,12 +104,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="flex shrink-0 items-center gap-2">
           <div className="text-right text-sm leading-tight">
             <div className="max-w-28 truncate font-semibold">{user.name}</div>
-            <div className="text-[11px] uppercase text-stone-400">{user.role}</div>
+            <div className="text-[11px] uppercase tracking-wide text-brand-300">{user.role}</div>
           </div>
           <button
             onClick={logout}
             disabled={loggingOut}
-            className="flex h-10 items-center gap-2 rounded-xl bg-stone-800 px-3 text-sm font-semibold hover:bg-stone-700 md:h-11"
+            className="flex h-10 items-center gap-2 rounded-xl bg-white/10 px-3 text-sm font-semibold ring-1 ring-white/10 hover:bg-white/20 md:h-11"
             title="Ganti pengguna / Logout"
             aria-label="Ganti pengguna"
           >
@@ -129,7 +129,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Navigasi bawah untuk HP */}
       {!onOrderScreen && (
         <nav
-          className="grid shrink-0 border-t border-stone-800 bg-stone-900 pb-[env(safe-area-inset-bottom)] md:hidden"
+          className="grid shrink-0 border-t border-white/5 bg-espresso-950 pb-[env(safe-area-inset-bottom)] md:hidden"
           style={{ gridTemplateColumns: `repeat(${nav.length}, minmax(0, 1fr))` }}
         >
           {nav.map((n) => (
@@ -138,7 +138,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={n.href}
               className={cn(
                 "relative flex h-14 flex-col items-center justify-center gap-0.5 text-[10px] font-semibold",
-                isActive(n.href) ? "text-brand-400" : "text-stone-400",
+                isActive(n.href) ? "text-brand-400" : "text-cream-200/60",
               )}
             >
               {isActive(n.href) && <span className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-brand-400" />}

@@ -64,7 +64,7 @@ export function PayDialog({
         </>
       }
     >
-      <div className="mb-4 rounded-2xl bg-stone-900 p-4 text-center text-white">
+      <div className="bg-espresso-gradient mb-4 rounded-2xl p-4 text-center text-white">
         <div className="text-sm text-stone-400">Total tagihan</div>
         <div className="text-4xl font-extrabold">Rp {rupiah(total)}</div>
       </div>

@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Delete, UserRound } from "lucide-react";
+import { Delete } from "lucide-react";
 import { api, errMsg } from "@/lib/client";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/misc";
@@ -59,13 +59,15 @@ export default function LoginPage() {
   });
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-600 to-brand-800 p-4">
-      <div className="grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl md:grid-cols-2">
-        <section className="border-b border-stone-200 p-6 md:border-b-0 md:border-r">
+    <main className="bg-espresso-gradient relative flex min-h-dvh items-center justify-center overflow-hidden p-4">
+      <span className="pointer-events-none absolute -bottom-10 -left-8 select-none text-[220px] leading-none opacity-10" aria-hidden>☕</span>
+      <span className="pointer-events-none absolute -right-6 -top-8 select-none text-[160px] leading-none opacity-10" aria-hidden>🍜</span>
+      <div className="animate-fade-up relative grid w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl shadow-black/40 md:grid-cols-2">
+        <section className="border-b border-cream-200 bg-cream-50 p-6 md:border-b-0 md:border-r">
           <div className="mb-6 flex items-center gap-3">
-            <img src="/icon.svg" alt="" className="h-12 w-12" />
+            <img src="/icon.svg" alt="" className="h-14 w-14 drop-shadow-md" />
             <div>
-              <h1 className="text-xl font-extrabold">Warkop Titik Hoki</h1>
+              <h1 className="text-xl font-extrabold tracking-tight text-espresso-900">Warkop Titik Hoki</h1>
               <p className="text-sm text-stone-500">Pilih nama Anda</p>
             </div>
           </div>
@@ -83,10 +85,10 @@ export default function LoginPage() {
                   }}
                   className={cn(
                     "flex min-h-20 flex-col items-center justify-center gap-1 rounded-2xl border-2 p-3 transition",
-                    selected?.id === u.id ? "border-brand-500 bg-brand-50" : "border-stone-200 hover:bg-stone-50",
+                    selected?.id === u.id ? "border-brand-500 bg-white shadow-md shadow-brand-500/15" : "border-cream-200 bg-white hover:border-cream-300",
                   )}
                 >
-                  <UserRound className="h-6 w-6 text-brand-600" />
+                  <span className={cn("flex h-11 w-11 items-center justify-center rounded-full text-lg font-extrabold text-white", u.role === "owner" ? "bg-espresso-gradient" : "bg-brand-gradient")}>{u.name.slice(0, 1).toUpperCase()}</span>
                   <span className="font-semibold">{u.name}</span>
                   <span className="text-xs uppercase text-stone-500">{u.role}</span>
                 </button>
@@ -142,7 +144,7 @@ function PinKey(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className="flex h-16 items-center justify-center rounded-2xl bg-stone-100 text-2xl font-bold text-stone-800 transition active:bg-stone-300 disabled:opacity-40"
+      className="flex h-16 items-center justify-center rounded-2xl bg-cream-100 text-2xl font-bold text-espresso-900 ring-1 ring-cream-200 transition hover:bg-cream-200 active:scale-95 active:bg-cream-300 disabled:opacity-40"
     />
   );
 }

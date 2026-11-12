@@ -7,6 +7,7 @@ import { api, errMsg } from "@/lib/client";
 import { fmtTime, rupiah } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { MenuCategory, MenuProduct, OrderDetail, OrderItemOption } from "@/lib/types";
+import { categoryStyle, productEmoji } from "@/lib/menu-style";
 import { Button } from "./ui/button";
 import { Input, Textarea } from "./ui/input";
 import { Dialog } from "./ui/dialog";
@@ -126,6 +127,13 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
     if (q) return all.filter((p) => p.name.toLowerCase().includes(q));
     return cat === "all" ? all : menu.find((c) => c.id === cat)?.products ?? [];
   }, [menu, cat, search]);
+
+  // Nama kategori per produk, untuk ikon & warna kartu menu
+  const catName = useMemo(() => {
+    const m = new Map<number, string>();
+    for (const c of menu ?? []) for (const p of c.products) m.set(p.id, c.name);
+    return m;
+  }, [menu]);
 
   const total = cart.reduce((a, i) => a + lineTotal(i), 0);
   const itemCount = cart.reduce((a, i) => a + i.qty, 0);
@@ -280,7 +288,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
     <div className="flex h-full min-h-0">
       {/* Kolom kiri: menu */}
       <section className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center gap-2 border-b border-stone-200 bg-white p-2 md:p-3">
+        <div className="flex items-center gap-2 border-b border-cream-200 bg-white/85 p-2 backdrop-blur md:p-3">
           <Button variant="ghost" size="icon" onClick={back} aria-label="Kembali">
             <ArrowLeft className="h-6 w-6" />
           </Button>
@@ -294,15 +302,18 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             )}
           </div>
         </div>
-        <div className="scroll-thin flex gap-2 overflow-x-auto border-b border-stone-200 bg-white px-2 py-2 md:px-3">
-          <CatTab active={cat === "all" && !search} onClick={() => { setCat("all"); setSearch(""); }}>
+        <div className="scroll-thin flex gap-2 overflow-x-auto border-b border-cream-200 bg-white/85 px-2 py-2 backdrop-blur md:px-3">
+          <CatTab active={cat === "all" && !search} emoji="✨" onClick={() => { setCat("all"); setSearch(""); }}>
             Semua
           </CatTab>
-          {menu.map((c) => (
-            <CatTab key={c.id} active={cat === c.id && !search} onClick={() => { setCat(c.id); setSearch(""); }}>
-              {c.name}
-            </CatTab>
-          ))}
+          {menu.map((c) => {
+            const s = categoryStyle(c.name);
+            return (
+              <CatTab key={c.id} active={cat === c.id && !search} emoji={s.emoji} activeClass={s.tone.chip} onClick={() => { setCat(c.id); setSearch(""); }}>
+                {c.name}
+              </CatTab>
+            );
+          })}
         </div>
         <div className="scroll-thin min-h-0 flex-1 overflow-y-auto p-2 md:p-3">
           {products.length === 0 ? (
@@ -311,25 +322,32 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-4">
               {products.map((p) => {
                 const inCart = cart.filter((i) => i.productId === p.id).reduce((a, i) => a + i.qty, 0);
+                const cn_ = catName.get(p.id) ?? "";
+                const { tone } = categoryStyle(cn_);
+                const hasOpts = p.optionGroups.length > 0 || p.variants.length > 1;
                 return (
                   <button
                     key={p.id}
                     disabled={readOnly}
                     onClick={() => tapProduct(p)}
                     className={cn(
-                      "relative flex min-h-[5.5rem] flex-col justify-between rounded-2xl border bg-white p-3 text-left shadow-sm transition hover:border-brand-400 active:scale-[0.98] active:bg-brand-50 disabled:opacity-50 md:min-h-24",
-                      inCart > 0 ? "border-brand-400 ring-1 ring-brand-400" : "border-stone-200",
+                      "relative flex min-h-[7.25rem] flex-col rounded-2xl border bg-gradient-to-br to-white p-3 text-left shadow-[0_1px_2px_rgb(74_46_31/0.06),0_4px_12px_-6px_rgb(74_46_31/0.15)] transition hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97] disabled:opacity-50",
+                      tone.card,
+                      inCart > 0 ? "border-brand-400 ring-2 ring-brand-400/60" : "border-cream-200",
                     )}
                   >
                     {inCart > 0 && (
-                      <span className="absolute -right-1.5 -top-1.5 flex h-6 min-w-6 items-center justify-center rounded-full bg-brand-600 px-1.5 text-xs font-bold text-white shadow">
+                      <span className="bg-brand-gradient absolute -right-1.5 -top-1.5 flex h-7 min-w-7 items-center justify-center rounded-full px-1.5 text-xs font-extrabold text-white shadow-md ring-2 ring-white">
                         {inCart}
                       </span>
                     )}
-                    <span className="text-[15px] font-semibold leading-snug md:text-base">{p.name}</span>
-                    <span className="mt-2 flex flex-wrap items-center justify-between gap-x-2 text-sm">
-                      <span className="font-bold text-brand-700">{priceLabel(p)}</span>
-                      {(p.optionGroups.length > 0 || p.variants.length > 1) && <span className="text-xs text-stone-400">pilihan ›</span>}
+                    <span className={cn("mb-2 flex h-10 w-10 items-center justify-center rounded-xl text-2xl ring-1", tone.bubble)} aria-hidden>
+                      {productEmoji(p.name, cn_)}
+                    </span>
+                    <span className="text-[15px] font-bold leading-snug text-espresso-900 md:text-base">{p.name}</span>
+                    <span className="mt-auto flex flex-wrap items-center justify-between gap-x-2 pt-1.5 text-sm">
+                      <span className={cn("font-extrabold", tone.price)}>{priceLabel(p)}</span>
+                      {hasOpts && <span className="rounded-full bg-white/80 px-1.5 text-[11px] font-semibold text-stone-500 ring-1 ring-cream-200">pilihan</span>}
                     </span>
                   </button>
                 );
@@ -339,15 +357,15 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
         </div>
 
         {/* Bar keranjang untuk HP */}
-        <div className="border-t border-stone-200 bg-white p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] md:hidden">
+        <div className="border-t border-cream-200 bg-white/90 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden">
           <button
             onClick={() => setCartOpen(true)}
-            className="flex h-14 w-full items-center gap-3 rounded-2xl bg-brand-600 px-4 text-white shadow-lg active:bg-brand-700"
+            className="bg-espresso-gradient flex h-14 w-full items-center gap-3 rounded-2xl px-4 text-white shadow-lg shadow-espresso-900/30 active:scale-[0.99]"
           >
             <span key={bump} className="relative animate-[pop_.25s_ease-out]">
               <ShoppingBasket className="h-6 w-6" />
               {itemCount > 0 && (
-                <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-brand-700">
+                <span className="bg-brand-gradient absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] font-bold text-white">
                   {itemCount}
                 </span>
               )}
@@ -355,11 +373,11 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             <span className="flex-1 text-left">
               <span className="block text-sm font-semibold leading-tight">
                 {itemCount > 0 ? `${itemCount} item` : "Keranjang kosong"}
-                {dirty && <span className="font-normal text-brand-100"> · belum disimpan</span>}
+                {dirty && <span className="font-normal text-brand-300"> · belum disimpan</span>}
               </span>
-              <span className="block text-xs text-brand-100">{tableLabel ? `Meja ${tableLabel}` : customerName || "Meja / nama belum diisi"}</span>
+              <span className="block text-xs text-cream-200/70">{tableLabel ? `Meja ${tableLabel}` : customerName || "Meja / nama belum diisi"}</span>
             </span>
-            <span className="text-lg font-extrabold">Rp {rupiah(total)}</span>
+            <span className="text-lg font-extrabold text-brand-300">Rp {rupiah(total)}</span>
             <ChevronUp className="h-5 w-5" />
           </button>
         </div>
@@ -368,11 +386,11 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
       {/* Kolom kanan: keranjang (di HP: layar penuh) */}
       <aside
         className={cn(
-          "flex-col bg-white md:static md:z-auto md:flex md:w-[340px] md:shrink-0 md:border-l md:border-stone-200 lg:w-[380px] xl:w-[420px]",
+          "flex-col bg-white md:static md:z-auto md:flex md:w-[340px] md:shrink-0 md:border-l md:border-cream-200 md:shadow-[-8px_0_24px_-12px_rgb(74_46_31/0.15)] lg:w-[380px] xl:w-[420px]",
           cartOpen ? "fixed inset-0 z-40 flex" : "hidden",
         )}
       >
-        <div className="border-b border-stone-200 p-3">
+        <div className="border-b border-cream-200 bg-cream-50 p-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <button onClick={() => setCartOpen(false)} className="-ml-1 flex h-10 w-10 items-center justify-center rounded-xl text-stone-600 hover:bg-stone-100 md:hidden" aria-label="Kembali ke menu">
               <ChevronDown className="h-6 w-6" />
@@ -423,7 +441,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
             </div>
           ) : cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center text-stone-400">
-              <ShoppingBasket className="h-12 w-12" />
+              <span className="mb-1 flex h-20 w-20 items-center justify-center rounded-full bg-cream-100 text-4xl ring-1 ring-cream-200">🧺</span>
               <p>
                 Ketuk menu <span className="hidden md:inline">di kiri </span>untuk menambah item
               </p>
@@ -432,11 +450,14 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
               </Button>
             </div>
           ) : (
-            <ul className="divide-y divide-stone-100">
+            <ul className="divide-y divide-cream-200">
               {cart.map((i) => (
-                <li key={i.uid} className="px-3 py-2">
+                <li key={i.uid} className="animate-fade-up px-3 py-2.5">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0">
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cream-100 text-xl ring-1 ring-cream-200" aria-hidden>
+                      {productEmoji(i.productName, i.productId ? catName.get(i.productId) : undefined)}
+                    </span>
+                    <div className="min-w-0 flex-1">
                       <div className="font-semibold leading-snug">{displayName(i)}</div>
                       {i.options.length > 0 && (
                         <div className="text-xs text-stone-500">
@@ -468,7 +489,7 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
           )}
         </div>
 
-        <div className="border-t border-stone-200 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="border-t border-cream-200 bg-cream-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <div className="mb-3 flex items-end justify-between gap-2">
             <span className="text-sm text-stone-500 md:text-base">
               Total · {itemCount} item {dirty && <span className="block font-semibold text-amber-600 xl:inline">(belum disimpan)</span>}
@@ -553,15 +574,28 @@ export function OrderScreen({ orderId }: { orderId: number | null }) {
   );
 }
 
-function CatTab({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function CatTab({
+  active,
+  onClick,
+  emoji,
+  activeClass = "bg-espresso-800",
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  emoji: string;
+  activeClass?: string;
+  children: React.ReactNode;
+}) {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "h-11 shrink-0 rounded-xl px-4 text-sm font-semibold transition",
-        active ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-700 hover:bg-stone-200",
+        "flex h-11 shrink-0 items-center gap-1.5 rounded-full pl-2 pr-4 text-sm font-semibold transition active:scale-95",
+        active ? cn(activeClass, "text-white shadow-md") : "bg-cream-100 text-espresso-800 ring-1 ring-cream-200 hover:bg-cream-200",
       )}
     >
+      <span className={cn("flex h-7 w-7 items-center justify-center rounded-full text-base", active ? "bg-white/25" : "bg-white")}>{emoji}</span>
       {children}
     </button>
   );

@@ -2,12 +2,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const variants = {
-  default: "bg-brand-600 text-white hover:bg-brand-700 active:bg-brand-800 shadow-sm",
-  secondary: "bg-stone-200 text-stone-900 hover:bg-stone-300 active:bg-stone-400",
-  outline: "border border-stone-300 bg-white text-stone-900 hover:bg-stone-50 active:bg-stone-100",
-  ghost: "text-stone-700 hover:bg-stone-200/70 active:bg-stone-300",
+  default: "bg-brand-gradient text-white shadow-md shadow-brand-600/25 hover:brightness-110 active:brightness-95",
+  secondary: "bg-cream-200 text-espresso-900 hover:bg-cream-300 active:bg-cream-300",
+  outline: "border border-cream-300 bg-white text-espresso-900 hover:bg-cream-50 active:bg-cream-100",
+  ghost: "text-stone-700 hover:bg-cream-200/70 active:bg-cream-300",
   destructive: "bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm",
-  success: "bg-emerald-600 text-white hover:bg-emerald-700 active:bg-emerald-800 shadow-sm",
+  success: "bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-md shadow-emerald-700/25 hover:brightness-110 active:brightness-95",
 } as const;
 
 const sizes = {
@@ -29,7 +29,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ref={ref}
       disabled={disabled || loading}
       className={cn(
-        "inline-flex select-none items-center justify-center gap-2 rounded-xl font-semibold transition-colors",
+        "inline-flex select-none items-center justify-center gap-2 rounded-xl font-semibold transition active:scale-[0.97]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-400 focus-visible:ring-offset-2",
         "disabled:pointer-events-none disabled:opacity-50",
         variants[variant],

@@ -76,7 +76,7 @@ export default function AdminMenuPage() {
               ["groups", "Grup Pilihan"],
             ] as const
           ).map(([k, l]) => (
-            <button key={k} onClick={() => setTab(k)} className={cn("h-10 rounded-lg px-4 text-sm font-semibold", tab === k ? "bg-stone-900 text-white" : "text-stone-600")}>
+            <button key={k} onClick={() => setTab(k)} className={cn("h-10 rounded-lg px-4 text-sm font-semibold", tab === k ? "bg-espresso-800 text-white" : "text-stone-600")}>
               {l}
             </button>
           ))}
